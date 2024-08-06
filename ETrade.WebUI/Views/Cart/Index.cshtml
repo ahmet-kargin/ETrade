@@ -1,13 +1,13 @@
-﻿@model ETrade.WebUI.Models.Basket.CartViewModel
-
-@{
+﻿@{
     ViewData["Title"] = "Shopping Cart";
+    var cartItems = ViewBag.CartItems as IEnumerable<ETrade.WebUI.Models.Basket.CartItemViewModel>;
+    var totalAmount = (decimal)ViewBag.TotalAmount;
 }
 
 <div class="container mt-5">
     <h2>@ViewData["Title"]</h2>
 
-    @if (Model.CartItems.Any())
+    @if (cartItems != null && cartItems.Any())
     {
         <form asp-action="UpdateCart" asp-controller="Cart" method="post">
             <table class="table">
@@ -22,27 +22,37 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.CartItems)
+                    @foreach (var item in cartItems)
                     {
                         <tr>
                             <td>@item.ProductName</td>
                             <td>@item.ProductDescription</td>
-                            <td>@item.Price.ToString("C")</td>
+                            <td class="price">@item.Price.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("tr-TR"))</td>
                             <td>
                                 <input type="number" name="cartItems[@item.ProductId].Quantity"
-                                       value="@item.Quantity" min="1" class="form-control" />
+                                       value="@item.Quantity" min="1" class="form-control quantity" data-price="@item.Price" />
                             </td>
-                            <td>@item.Subtotal.ToString("C")</td>
+                            <td class="subtotal">@item.Subtotal.ToString("N", System.Globalization.CultureInfo.GetCultureInfo("tr-TR"))</td>
                             <td>
-                                <a asp-action="RemoveFromCart" asp-controller="Cart" asp-route-productId="@item.ProductId"
-                                   class="btn btn-danger btn-sm">Remove</a>
+                                @using (Html.BeginForm("RemoveCartAsync", "Cart", FormMethod.Post))
+                                {
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                    <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                }
+
                             </td>
                         </tr>
                     }
+                    <tr>
+                        <td colspan="4"></td>
+                        <td>
+                            <h4>Total: ₺<span id="totalAmount">@totalAmount.ToString("N", System.Globalization.CultureInfo.GetCultureInfo("tr-TR"))</span></h4>
+                        </td>
+                        <td></td>
+                    </tr>
                 </tbody>
             </table>
             <div class="d-flex justify-content-between">
-                <h4>Total: @Model.TotalAmount.ToString("C")</h4>
                 <button type="submit" class="btn btn-primary">Update Cart</button>
             </div>
         </form>
@@ -57,3 +67,48 @@
         <a asp-action="Checkout" asp-controller="Order" class="btn btn-success">Proceed to Checkout</a>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const quantityInputs = document.querySelectorAll('.quantity');
+
+            quantityInputs.forEach(input => {
+                input.addEventListener('input', updateSubtotalAndTotal);
+            });
+
+            function updateSubtotalAndTotal(event) {
+                const input = event.target;
+                const price = parseFloat(input.getAttribute('data-price').replace(',', '.')); // Convert price to float
+                const quantity = parseInt(input.value, 10); // Convert quantity to integer
+                const subtotal = price * quantity;
+
+                // Update subtotal
+                const subtotalElement = input.closest('tr').querySelector('.subtotal');
+                subtotalElement.textContent = subtotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' });
+
+                // Update total
+                let totalAmount = 0;
+                document.querySelectorAll('.subtotal').forEach(sub => {
+                    // Clean the subtotal value
+                    const cleanedValue = sub.textContent
+                        .replace('₺', '') // Remove currency symbol
+                        .replace(/\s/g, '') // Remove any spaces
+                        .replace(',', '.'); // Replace comma with dot for float conversion
+
+                    // Ensure the value is a number
+                    const subtotalValue = parseFloat(cleanedValue);
+                    if (!isNaN(subtotalValue)) {
+                        totalAmount += subtotalValue;
+                    }
+                });
+
+                document.getElementById('totalAmount').textContent = totalAmount;
+            }
+        });
+
+
+
+
+    </script>
+}

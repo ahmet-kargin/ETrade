@@ -16,8 +16,24 @@ public class CartRepository : ICartRepository
 
     public async Task AddToCartAsync(int userId, int productId, int quantity)
     {
-        var cartItem = await _context.CartItems
-            .FirstOrDefaultAsync(ci =>  ci.ProductId == productId);
+        var cart = await _context.Carts
+            .Include(c => c.CartItems)
+            .FirstOrDefaultAsync(c => c.UserId == userId);
+
+        if (cart == null)
+        {
+            // Eğer kullanıcının sepeti yoksa yeni bir sepet oluştur
+            cart = new Cart
+            {
+                UserId = userId,
+                CartItems = new List<CartItem>()
+            };
+            _context.Carts.Add(cart);
+            await _context.SaveChangesAsync();
+        }
+
+        var cartItem = cart.CartItems
+            .FirstOrDefault(ci => ci.ProductId == productId);
 
         if (cartItem != null)
         {
@@ -30,7 +46,7 @@ public class CartRepository : ICartRepository
             // Yeni ürün ekle
             cartItem = new CartItem
             {
-                Id = userId,
+                CartId = cart.Id,
                 ProductId = productId,
                 Quantity = quantity
             };
@@ -39,6 +55,7 @@ public class CartRepository : ICartRepository
 
         await _context.SaveChangesAsync();
     }
+
 
 
     public async Task<IEnumerable<CartItem>> GetCartItemsByUserIdAsync(int userId)
