@@ -1,0 +1,64 @@
+﻿@model ETrade.WebUI.Models.Home.HomeViewModel
+
+<div class="container">
+    <!-- Slider -->
+    <div class="row">
+        <div class="col-md-9">
+            <div id="carouselExampleControls" class="carousel slide mb-3">
+                <div class="carousel-inner">
+                    <!-- Slider içeriğinizi buraya ekleyin -->
+                    <div class="carousel-item active">
+                        <img src="https://erhas.net/wp-content/uploads/2021/03/logo_black.png" class="d-block w-100" alt="Ürün 1">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="https://erhas.net/wp-content/uploads/2021/03/logo_black.png" class="d-block w-100" alt="Ürün 2">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="https://erhas.net/wp-content/uploads/2021/03/logo_black.png" class="d-block w-100" alt="Ürün 3">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="https://erhas.net/wp-content/uploads/2021/03/logo_black.png" class="d-block w-100" alt="Ürün 4">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="https://erhas.net/wp-content/uploads/2021/03/logo_black.png" class="d-block w-100" alt="Ürün 5">
+                    </div>
+                </div>
+                <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ürün Listesi -->
+    <div class="row">
+        <div class="col-md-9">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Stock Code</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in Model.Products)
+                    {
+                        <tr>
+                            <td>@product.Name</td>
+                            <td>@product.Description</td>
+                            <td>@product.Price.ToString("C")</td>
+                            <td>@product.StockCode</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

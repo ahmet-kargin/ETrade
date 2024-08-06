@@ -1,0 +1,14 @@
+﻿@model ETrade.WebUI.Models.CategoryModel.CategoryViewModel
+
+<div class="categories">
+    <ul class="list-group">
+        @if (Model != null )
+        {
+            @foreach (var category in Model.Name)
+            {
+                <li class="list-group-item">@category</li>
+            }
+        }
+       
+    </ul>
+</div>

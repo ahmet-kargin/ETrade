@@ -1,0 +1,136 @@
+﻿@using ETrade.Application.Interfaces
+
+@inject IHttpContextAccessor HttpContextAccessor;
+@model ETrade.WebUI.Models.Home.HomeViewModel;
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ETrade.WebUI</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ETrade.WebUI.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+
+</head>
+<body>
+   
+
+
+        <header>
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <div class="container-fluid">
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Kategoriler
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li>
+                                        <a href="@Url.Action("Index", "Home", new { categoryId = (int?)null })" class="dropdown-item @(ViewBag.SelectedCategoryId == null ? "active" : "")">Tüm Kategoriler</a>
+                                    </li>
+                                    @if (ViewBag.Categories != null)
+                                    {
+                                        foreach (var category in ViewBag.Categories)
+                                        {
+                                            <li>
+                                                <a href="@Url.Action("Index", "Home", new { categoryId = category.Id })" class="dropdown-item @(ViewBag.SelectedCategoryId == category.Id ? "active" : "")">@category.Name</a>
+                                            </li>
+                                        }
+                                    }
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area=""  asp-controller="Cart" asp-action="Index">
+                                    <i class="bi bi-cart3"></i> Sepetim
+                                </a>
+                            </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdownAccount" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Hesabım
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownAccount">
+                                @if (HttpContextAccessor.HttpContext.Session.GetString("Email") != null)
+                                {
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="UserProfile">@HttpContextAccessor.HttpContext.Session.GetString("Email")</a></li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Logout">Çıkış Yap</a></li>
+                                }
+                                else
+                                {
+                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></li>
+                                }
+                            </ul>
+                        </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+    
+    <div class="container-fluid">
+        <div class="row">
+            @if (HttpContextAccessor.HttpContext.Session.GetString("Email") != null)
+            {
+                <div class="col-md-2">
+                    <div class="list-group">
+                        <a href="@Url.Action("Index", "Home", new { categoryId = (int?)null })" class="list-group-item list-group-item-action @(ViewBag.SelectedCategoryId == null ? "active" : "")">Tüm Kategoriler</a>
+                        @if (ViewBag.Categories != null)
+                        {
+                            foreach (var category in ViewBag.Categories)
+                            {
+                                <a href="@Url.Action("Index", "Home", new { categoryId = category.Id })" class="list-group-item list-group-item-action @(ViewBag.SelectedCategoryId == category.Id ? "active" : "")">@category.Name</a>
+                            }
+                        }
+                    </div>
+                </div>
+
+            }
+            <!-- Ana İçerik -->
+            <main role="main" class="col-md-9 ms-sm-auto col-lg-10 px-4">
+                <div class="container">
+                    @RenderBody()
+                </div>
+            </main>
+        </div>
+    </div>
+
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2024 - ETrade.WebUI - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Kategori menüsünden seçilen kategoriyi işlemek için event handler ekleyin
+            $(document).on('click', '.category-item', function () {
+                var categoryId = $(this).data('id');
+                $.get('@Url.Action("GetProductsByCategory", "Product")', { categoryId: categoryId }, function (data) {
+                    $('#product-list').html(data);
+                });
+            });
+
+            // Kategorileri yüklemek için AJAX çağrısı
+            $.get('@Url.Action("GetCategories", "Category")', function (data) {
+                $('#category-menu').html(data);
+            });
+        });
+    </script>
+
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

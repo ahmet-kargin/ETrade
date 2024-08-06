@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35004.147
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ETrade.WebUI", "ETrade.WebUI\ETrade.WebUI.csproj", "{04581215-5A45-48E6-A498-D893AA48986D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ETrade.Domain", "ETrade.Domain\ETrade.Domain.csproj", "{6835CD20-F0B9-4AA8-8E89-EF9749407388}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ETrade.Infrastructure", "ETrade.Infrastructure\ETrade.Infrastructure.csproj", "{22054142-F443-4DFE-812B-B259A4FF448A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ETrade.Application", "ETrade.Application\ETrade.Application.csproj", "{58583E4E-AA02-4CC5-AD7E-B8FC2FDC193A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Framework", "Framework", "{4608BC7D-1AD5-4345-B9B6-D4013FE492A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ETrade.Services", "ETrade.Services\ETrade.Services.csproj", "{6D42C0FF-76D2-4B7A-9EC1-CA3EC95FFC5E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{04581215-5A45-48E6-A498-D893AA48986D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04581215-5A45-48E6-A498-D893AA48986D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04581215-5A45-48E6-A498-D893AA48986D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04581215-5A45-48E6-A498-D893AA48986D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6835CD20-F0B9-4AA8-8E89-EF9749407388}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6835CD20-F0B9-4AA8-8E89-EF9749407388}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6835CD20-F0B9-4AA8-8E89-EF9749407388}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6835CD20-F0B9-4AA8-8E89-EF9749407388}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22054142-F443-4DFE-812B-B259A4FF448A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22054142-F443-4DFE-812B-B259A4FF448A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22054142-F443-4DFE-812B-B259A4FF448A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22054142-F443-4DFE-812B-B259A4FF448A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58583E4E-AA02-4CC5-AD7E-B8FC2FDC193A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58583E4E-AA02-4CC5-AD7E-B8FC2FDC193A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58583E4E-AA02-4CC5-AD7E-B8FC2FDC193A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58583E4E-AA02-4CC5-AD7E-B8FC2FDC193A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D42C0FF-76D2-4B7A-9EC1-CA3EC95FFC5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D42C0FF-76D2-4B7A-9EC1-CA3EC95FFC5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D42C0FF-76D2-4B7A-9EC1-CA3EC95FFC5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D42C0FF-76D2-4B7A-9EC1-CA3EC95FFC5E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6835CD20-F0B9-4AA8-8E89-EF9749407388} = {4608BC7D-1AD5-4345-B9B6-D4013FE492A4}
+		{22054142-F443-4DFE-812B-B259A4FF448A} = {4608BC7D-1AD5-4345-B9B6-D4013FE492A4}
+		{58583E4E-AA02-4CC5-AD7E-B8FC2FDC193A} = {4608BC7D-1AD5-4345-B9B6-D4013FE492A4}
+		{6D42C0FF-76D2-4B7A-9EC1-CA3EC95FFC5E} = {4608BC7D-1AD5-4345-B9B6-D4013FE492A4}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {573897D7-EAC0-4733-8178-9941454BEF7D}
+	EndGlobalSection
+EndGlobal
