@@ -9,6 +9,11 @@
                 </div>
                 <div class="card-body">
                     <form asp-action="Login" method="post">
+
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div asp-validation-summary="All" class="alert alert-danger"></div>
+                        }
                         <div class="form-group mb-3">
                             <label asp-for="Email" class="form-label"></label>
                             <input asp-for="Email" class="form-control" />

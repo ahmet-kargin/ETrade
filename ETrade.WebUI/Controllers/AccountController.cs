@@ -49,9 +49,13 @@ public class AccountController : Controller
                 // Anasayfaya yönlendir
                 return RedirectToAction("Index", "Home");
             }
+            else
+            {
+                // Geçersiz giriş denemesi durumunda hata mesajı ekle
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                return View(model); // RedirectToAction yerine View döndür
+            }
 
-            // Geçersiz giriş denemesi durumunda hata mesajı ekle
-            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
         }
         return View(model);
     }
