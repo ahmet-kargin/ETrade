@@ -34,7 +34,7 @@
                             </td>
                             <td class="subtotal">@item.Subtotal.ToString("N", System.Globalization.CultureInfo.GetCultureInfo("tr-TR"))</td>
                             <td>
-                                @using (Html.BeginForm("RemoveCartAsync", "Cart", FormMethod.Post))
+                                @using (Html.BeginForm("DeleteFromCartAsync", "Cart", FormMethod.Post))
                                 {
                                     <input type="hidden" name="productId" value="@item.ProductId" />
                                     <button type="submit" class="btn btn-danger btn-sm">Remove</button>
@@ -63,7 +63,7 @@
     }
 
     <div class="mt-3">
-        <a asp-action="Index" asp-controller="Product" class="btn btn-secondary">Continue Shopping</a>
+        <a asp-action="Index" asp-controller="Home" class="btn btn-secondary">Continue Shopping</a>
         <a asp-action="Checkout" asp-controller="Order" class="btn btn-success">Proceed to Checkout</a>
     </div>
 </div>

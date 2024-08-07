@@ -87,9 +87,14 @@ public class CartRepository : ICartRepository
     // Kullanıcının sepetinden bir ürünü kaldıran metod
     public async Task RemoveFromCartAsync(int userId, int productId)
     {
+        // Kullanıcının sepetini ve sepet öğelerini veritabanından getirir
+        var cart = await _context.Carts
+            .Include(c => c.CartItems)
+            .FirstOrDefaultAsync(c => c.UserId == userId);
+
         // Kullanıcının sepetindeki belirtilen ürünü getirir
-        var cartItem = await _context.CartItems
-            .FirstOrDefaultAsync(ci => ci.Cart.UserId == userId && ci.ProductId == productId);
+        var cartItem = cart.CartItems
+            .FirstOrDefault(ci => ci.ProductId == productId);
 
         // Eğer ürün sepetinde varsa, ürünü sepetten kaldırır ve değişiklikleri kaydeder
         if (cartItem != null)
