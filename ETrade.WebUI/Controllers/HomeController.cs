@@ -1,15 +1,9 @@
-using ETrade.Application.Interfaces;
+﻿using ETrade.Application.Interfaces;
 using ETrade.Infrastructure.Connection;
 using ETrade.Services.Services;
-using ETrade.WebUI.Models;
 using ETrade.WebUI.Models.Home;
 using ETrade.WebUI.Models.Login;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
-using System.Diagnostics;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 namespace ETrade.WebUI.Controllers;
 
@@ -20,6 +14,7 @@ public class HomeController : Controller
     private readonly IUserRepository _userRepository;
     private readonly ApplicationDbContext _context;
 
+    // Dependency Injection kullanılarak gerekli servislerin alınması
     public HomeController(CategoryService categoryService, ProductService productService, IUserRepository userRepository)
     {
         _categoryService = categoryService;
@@ -28,16 +23,19 @@ public class HomeController : Controller
     }
 
 
-
+    // Kategoriler ve ürünler için partial view'i döndüren action method
     [HttpGet]
     public async Task<IActionResult> GetCategoryAndProductPartial(int? categoryId)
     {
+        // Kategorileri getir
         var categories = await _categoryService.GetCategoriesAsync();
+
+        // Eğer categoryId varsa, o kategoriye ait ürünleri getir, yoksa tüm ürünleri getir
         var products = categoryId.HasValue
             ? await _productService.GetProductsByCategoryAsync(categoryId.Value)
             : await _productService.GetAllProductsAsync();
 
-        // Domain model'i view model'e d�n�?t�r
+        // Domain model'i view model'e dönüştür
         var categoryViewModels = categories.Select(c => new CategoryViewModel
         {
             Id = c.Id,
@@ -53,6 +51,7 @@ public class HomeController : Controller
             StockCode = p.StockCode
         });
 
+        // HomeViewModel oluştur ve verileri ata
         var model = new HomeViewModel
         {
             Categories = categoryViewModels,
@@ -60,17 +59,23 @@ public class HomeController : Controller
             SelectedCategoryId = categoryId
         };
 
+        // "_CategoryAndProductPartial" partial view'ini döndür
         return PartialView("_CategoryAndProductPartial", model);
     }
 
+    // Ana sayfa için action method
     [HttpGet]
     public async Task<IActionResult> Index(int? categoryId)
     {
+        // Kategorileri getir
         var categories = await _categoryService.GetCategoriesAsync();
+
+        // Eğer categoryId varsa, o kategoriye ait ürünleri getir, yoksa tüm ürünleri getir
         var products = categoryId.HasValue
             ? await _productService.GetProductsByCategoryAsync(categoryId.Value)
             : await _productService.GetAllProductsAsync();
 
+        // Domain model'leri view model'lere dönüştür
         var categoryViewModels = categories.Select(c => new CategoryViewModel
         {
             Id = c.Id,
@@ -86,27 +91,33 @@ public class HomeController : Controller
             StockCode = p.StockCode
         }).ToList();
 
+        // HomeViewModel oluştur ve verileri ata
         var model = new HomeViewModel
         {
             Categories = categoryViewModels,
             Products = productViewModels,
             SelectedCategoryId = categoryId
         };
+
+        // ViewBag üzerinden kategorileri ve seçilen kategori ID'sini view'e gönder
         ViewBag.Categories = categories;
         ViewBag.SelectedCategoryId = categoryId;
         return View(model);
     }
+
+    // Kullanıcı profilini görüntüleyen action method
     public async Task<IActionResult> UserProfile()
     {
-        // Kullan?c? ID'sini session'dan al
+        // Kullanıcı ID'sini session'dan al
         var userIdString = HttpContext.Session.GetString("Id");
 
+        // Eğer ID yoksa veya geçerli bir ID değilse, login sayfasına yönlendir
         if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
         {
             return RedirectToAction("Login", "Account");
         }
 
-        // Kullan?c?y? ID'ye g�re bul
+        // Kullanıcıyı ID'ye göre bul
         var user = await _userRepository.GetUserByIdAsync(userId);
 
         if (user == null)
@@ -114,17 +125,18 @@ public class HomeController : Controller
             return NotFound();
         }
 
-        // ViewModel olu?tur
+        // UserViewModel oluştur ve verileri ata
         var model = new UserViewModel
         {
-            UserName = user.FirstName + " " + user.LastName, // �rnek: tam ad
+            UserName = user.FirstName + " " + user.LastName, // Örnek: tam ad
             Email = user.Email,
             Phone = user.Phone,
             Address = user.Address
-            // Di?er kullan?c? bilgilerini ekleyin
         };
+
+        // ViewBag üzerinden kullanıcı profilini view'e gönder
         ViewBag.UserProfile = model;
-        return View(); // Burada UserViewModel t�r�nde bir model g�nderiliyor
+        return View(); // Burada UserViewModel türünde bir model gönderiliyor
     }
 
 

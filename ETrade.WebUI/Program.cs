@@ -1,4 +1,4 @@
-using ETrade.Application.Interfaces;
+﻿using ETrade.Application.Interfaces;
 using ETrade.Domain.Entities;
 using ETrade.Infrastructure.Connection;
 using ETrade.Infrastructure.Repository;
@@ -37,23 +37,31 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 
 
-// Configure Identity
+// Authentication (kimlik doğrulama) hizmetini yapılandırır. Bu, uygulamanın kimlik doğrulama işlemlerini nasıl yöneteceğini belirler.
 builder.Services.AddAuthentication(options =>
 {
+    // Varsayılan kimlik doğrulama şeması olarak JWT Bearer (taşıyıcı) şemasını ayarlar.
+    // Bu, gelen isteklerde JWT tabanlı kimlik doğrulamasının kullanılacağını belirtir.
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+
+    // Varsayılan zorlama (challenge) şeması olarak JWT Bearer (taşıyıcı) şemasını ayarlar.
+    // Bu, kimlik doğrulama gerektiren bir istek yapıldığında JWT Bearer şemasının kullanılacağını belirtir.
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(options =>
 {
+    // JWT Bearer (taşıyıcı) kimlik doğrulama şemasını ekler ve yapılandırır.
+
+    // Token doğrulama parametrelerini yapılandırır.
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        ValidateIssuer = true,   // Issuer (yayımcı) bilgisini doğrular. Token'ın doğru yayımcı tarafından oluşturulup oluşturulmadığını kontrol eder.
+        ValidateAudience = true, // Audience (hedef kitle) bilgisini doğrular. 
+        ValidateLifetime = true, // Token'ın süresinin dolup dolmadığını doğrular.
+        ValidateIssuerSigningKey = true, // Token'ın imzasının geçerli olup olmadığını doğrular.
+        ValidIssuer = builder.Configuration["Jwt:Issuer"], // Geçerli yayımcı bilgisi. Token'ın bu yayımcı tarafından oluşturulmuş olması gerekir.
+        ValidAudience = builder.Configuration["Jwt:Audience"], // Geçerli hedef kitle bilgisi. Token'ın bu hedef kitleye yönelik olması gerekir.
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])) // Token imzası için kullanılan anahtar.
     };
 });
 
