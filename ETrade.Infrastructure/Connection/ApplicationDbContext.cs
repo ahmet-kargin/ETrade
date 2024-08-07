@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace ETrade.Infrastructure.Connection;
+﻿namespace ETrade.Infrastructure.Connection;
 
 using ETrade.Domain.Entities;
 using Framework.ETrade.Domain.Entities;

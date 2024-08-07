@@ -1,6 +1,4 @@
-﻿using ETrade.WebUI.Models.Home;
-
-namespace ETrade.WebUI.Models.Basket;
+﻿namespace ETrade.WebUI.Models.Basket;
 
 public class CartItemViewModel
 {

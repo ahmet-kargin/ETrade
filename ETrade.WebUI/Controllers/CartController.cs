@@ -1,10 +1,6 @@
 ﻿using ETrade.Application.Interfaces;
-using ETrade.Domain.Entities;
 using ETrade.WebUI.Models.Basket;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace ETrade.WebUI.Controllers
 {
