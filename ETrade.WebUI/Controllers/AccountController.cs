@@ -58,7 +58,7 @@ public class AccountController : Controller
 
     // Kayıt sayfasını görüntüleyen action method
     [HttpGet]
-    public IActionResult Register()
+    public async Task<IActionResult> Register()
     {
         return View();
     }
@@ -69,23 +69,37 @@ public class AccountController : Controller
     {
         if (ModelState.IsValid)
         {
-            // Yeni kullanıcı oluştur
-            var user = new User
+            // E-posta adresinin veritabanında olup olmadığını kontrol et
+            var existingUser = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == model.Email);
+            if (existingUser != null)
             {
-                Email = model.Email,
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Phone = model.PhoneNumber,
-                Address = model.Address,
-                IsActive = true,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password) // Şifreyi hashle
-            };
+                // E-posta adresi zaten mevcut
+                ModelState.AddModelError(string.Empty, "Bu e-posta adresi zaten kullanımda.");
+                return View(model); // RedirectToAction yerine View döndür
+            }
+            else
+            {
 
-            // Kullanıcıyı veritabanına ekle
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-            // Anasayfaya yönlendir
-            return RedirectToAction("Index", "Home");
+
+                // Yeni kullanıcı oluştur
+                var user = new User
+                {
+                    Email = model.Email,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Phone = model.PhoneNumber,
+                    Address = model.Address,
+                    IsActive = true,
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password) // Şifreyi hashle
+                };
+
+                // Kullanıcıyı veritabanına ekle
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+                // Anasayfaya yönlendir
+                return RedirectToAction("Index", "Home");
+            }
         }
         return View(model);
     }

@@ -7,20 +7,14 @@
 <h2>Register</h2>
 
 
-@if (!ViewData.ModelState.IsValid)
-{
-    <div class="alert alert-danger mt-3">
-        <ul>
-            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-            {
-                <li>@error.ErrorMessage</li>
-            }
-        </ul>
-    </div>
-}
 
-@using (Html.BeginForm("Register", "Account", FormMethod.Post))
-{
+
+<form asp-action="Register" asp-controller="Account" method="post">
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="All" class="alert alert-danger"></div>
+    }
     <div class="form-group">
         <label asp-for="Email"></label>
         <input asp-for="Email" class="form-control" />
@@ -36,7 +30,7 @@
         <input asp-for="ConfirmPassword" type="password" class="form-control" />
         <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
     </div>
-    
+
     <div class="form-group">
         <label asp-for="FirstName"></label>
         <input asp-for="FirstName" class="form-control" />
@@ -57,10 +51,13 @@
         <input asp-for="Address" class="form-control" />
         <span asp-validation-for="Address" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-primary">Register</button>
-}
+    <div class="mb-3 col-6 col-sm-3">
+        <button class="btn btn-outline-primary d-block w-100 mt-3" type="submit" name="submit">Register</button>
+    </div>
 
 
-<p>
-    <a asp-action="Login">Already have an account? Login here</a>
-</p>
+
+    <p>
+        <a asp-action="Login">Already have an account? Login here</a>
+    </p>
+</form>
