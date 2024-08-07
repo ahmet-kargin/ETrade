@@ -35,6 +35,7 @@ namespace ETrade.WebUI.Controllers
             // CartItem modelinden CartItemViewModel'e dönüşüm
             var cartItemsViewModel = cartItems.Select(item => new CartItemViewModel
             {
+                ProductId = item.ProductId,
                 ProductName = item.Product.Name,
                 ProductDescription = item.Product.Description,
                 Price = item.Product.Price,
@@ -100,7 +101,7 @@ namespace ETrade.WebUI.Controllers
 
         // Sepetten ürün silen action method
         [HttpPost]
-        public async Task<IActionResult> DeleteFromCartAsync(int productId)
+        public async Task<IActionResult> DeleteCart(int productId)
         {
             // Kullanıcı ID'sini session'dan al
             var userIdString = HttpContext.Session.GetString("Id");
