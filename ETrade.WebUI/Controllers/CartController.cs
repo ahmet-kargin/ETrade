@@ -1,4 +1,5 @@
 ﻿using ETrade.Application.Interfaces;
+using ETrade.Infrastructure.Repository;
 using ETrade.WebUI.Models.Basket;
 using ETrade.WebUI.Models.OrderModel;
 using Microsoft.AspNetCore.Http;
@@ -167,6 +168,11 @@ namespace ETrade.WebUI.Controllers
 
             // Kullanıcının sepetini temizler.
             HttpContext.Session.Remove("CartItems");
+
+            foreach (var cartItem in cartItems)
+            {
+                await _cartService.RemoveFromCartAsync(userId, cartItem.ProductId);
+            }
 
             // Sipariş listesine yönlendirir.
             return RedirectToAction("OrderList", new { orderId = order.Id });
