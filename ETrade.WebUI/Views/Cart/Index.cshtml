@@ -2,6 +2,9 @@
     ViewData["Title"] = "Shopping Cart";
     var cartItems = ViewBag.CartItems as IEnumerable<ETrade.WebUI.Models.Basket.CartItemViewModel>;
     var totalAmount = (decimal)ViewBag.TotalAmount;
+
+    // Biçimlendirilmiş toplam tutar
+    string formattedTotalAmount = string.Format("₺{0:#,##0.00}", totalAmount);
 }
 
 <div class="container mt-5">
@@ -48,12 +51,12 @@
                     }
                 </tbody>
             </table>
-            <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-primary">Update Cart</button>
-            </div>
+            
+
+
         </form>
         <div class="mt-3">
-            <h4>Total: <span id="totalAmount">@totalAmount.ToString("N", System.Globalization.CultureInfo.GetCultureInfo("tr-TR"))</span></h4>
+            <h4>Total: <span id="totalAmount">@formattedTotalAmount</span></h4>
         </div>
     }
     else
@@ -63,7 +66,9 @@
 
     <div class="mt-3">
         <a asp-action="Index" asp-controller="Home" class="btn btn-secondary">Continue Shopping</a>
-        <a asp-action="Checkout" asp-controller="Order" class="btn btn-success">Proceed to Checkout</a>
+        <form asp-action="ConfirmOrder" asp-controller="Cart" method="post" class="d-inline">
+            <button type="submit" class="btn btn-primary">Confirm Order</button>
+        </form>
     </div>
 </div>
 
@@ -78,12 +83,12 @@
 
             function updateSubtotalAndTotal(event) {
                 const input = event.target;
-                const price = parseFloat(input.getAttribute('data-price').replace(',', '.'));
+                const price = parseFloat(input.getAttribute('data-price').replace('₺', '').replace(',', '.'));
                 const quantity = parseInt(input.value, 10);
                 const subtotal = price * quantity;
 
                 const subtotalElement = input.closest('tr').querySelector('.subtotal');
-                subtotalElement.textContent = subtotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' });
+                subtotalElement.textContent = formatCurrency(subtotal);
 
                 updateTotalAmount();
             }
@@ -102,7 +107,13 @@
                     }
                 });
 
-                document.getElementById('totalAmount').textContent = totalAmount.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' });
+                // Yuvarlama işlemi
+                totalAmount = Math.round(totalAmount * 100) / 100;
+                document.getElementById('totalAmount').textContent = formatCurrency(totalAmount);
+            }
+
+            function formatCurrency(amount) {
+                return `₺${amount.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
             }
 
             updateTotalAmount();

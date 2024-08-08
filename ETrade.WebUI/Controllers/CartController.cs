@@ -1,5 +1,7 @@
 ﻿using ETrade.Application.Interfaces;
 using ETrade.WebUI.Models.Basket;
+using ETrade.WebUI.Models.OrderModel;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ETrade.WebUI.Controllers
@@ -9,12 +11,16 @@ namespace ETrade.WebUI.Controllers
     {
         private readonly IProductRepository _productRepository;
         private readonly ICartRepository _cartService;
+        private readonly IOrderItemRepository _orderItemRepository;
+        private readonly IOrderRepository _orderRepository;
 
         // Dependency Injection kullanılarak gerekli servislerin alınması
-        public CartController(IProductRepository productRepository, ICartRepository cartService)
+        public CartController(IProductRepository productRepository, ICartRepository cartService, IOrderRepository orderRepository, IOrderItemRepository orderItemRepository)
         {
             _productRepository = productRepository;
             _cartService = cartService;
+            _orderRepository = orderRepository;
+            _orderItemRepository = orderItemRepository;
         }
 
         // Sepet sayfasını görüntüleyen action method
@@ -74,7 +80,7 @@ namespace ETrade.WebUI.Controllers
 
         // Sepete ürün ekleyen action method
         [HttpPost]
-        public async Task<IActionResult> AddToCart(int productId, int quantity)
+        public async Task<IActionResult> AddToCart(int productId, int quantity = 1)
         {
             // Kullanıcı ID'sini session'dan al
             var userIdString = HttpContext.Session.GetString("Id");
@@ -118,7 +124,81 @@ namespace ETrade.WebUI.Controllers
             return RedirectToAction("Index", "Cart");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ConfirmOrder()
+        {
+            var userIdString = HttpContext.Session.GetString("Id");
+            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var cartItems = await _cartService.GetCartItemsByUserIdAsync(userId);
+            if (cartItems == null || !cartItems.Any())
+            {
+                return RedirectToAction("Index");
+            }
+
+            // var totalAmount = cartItems.Sum(item => item.Product.Price * item.Quantity);
+            decimal totalAmount = 0;
+            foreach (var cartItem in cartItems)
+            {
+                totalAmount += cartItem.Product.Price * cartItem.Quantity;
+            }
+
+            var order = new Framework.ETrade.Domain.Entities.Order
+            {
+                UserId = userId,
+                OrderDate = DateTime.Now,
+                TotalAmount = totalAmount,
+                OrderItems = cartItems.Select(cartItem => new Framework.ETrade.Domain.Entities.OrderItem
+                {
+                    ProductId = cartItem.ProductId,
+                    Quantity = cartItem.Quantity,
+                    Price = cartItem.Product.Price
+                }).ToList()
+            };
+
+            await _orderRepository.AddAsync(order);
+            await _orderRepository.SaveChangesAsync();
+
+            HttpContext.Session.Remove("CartItems");
+
+            return RedirectToAction("OrderList", new { orderId = order.Id });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> OrderList()
+        {
+            var userIdString = HttpContext.Session.GetString("Id");
+            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var orders = await _orderRepository.GetOrdersByUserIdAsync(userId);
+
+            var orderViewModels = orders.Select(order => new OrderModel
+            {
+                Id = order.Id,
+                UserId = order.UserId.ToString(),
+                OrderDate = order.OrderDate,
+                TotalAmount = order.TotalAmount,
+                OrderItems = order.OrderItems.Select(oi => new OrderItemModel
+                {
+                    ProductId = oi.ProductId,
+                    Quantity = oi.Quantity,
+                    Price = oi.Price,
+                    ProductName = oi.Product.Name // ProductName'i OrderItemModel'e ekledik
+                }).ToList()
+            }).ToList();
+
+            return View(orderViewModels); // View'e gönderme
+        }
 
     }
+
+
 }
+
 

@@ -1,6 +1,5 @@
 ﻿@using ETrade.Application.Interfaces
-
-@inject IHttpContextAccessor HttpContextAccessor;
+@inject ICurrentUser CurrentUser;
 
 <!DOCTYPE html>
 <html lang="en">
@@ -16,62 +15,73 @@
     <style>
         #cartItemCount {
             position: absolute;
-            top:5px;
-            padding: 2px 4px;
-            font-size: 12px;
+            top: 6px;
+            padding: 2px 3px;
+            font-size: 10px;
             color: #fff;
             background-color: #dc3545;
+            margin-left: 4px;
         }
     </style>
 </head>
 <body>
-   
 
 
-        <header>
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-                <div class="container-fluid">
-                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                        <ul class="navbar-nav flex-grow-1">
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Kategoriler
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <li>
-                                        <a href="@Url.Action("Index", "Home", new { categoryId = (int?)null })" class="dropdown-item @(ViewBag.SelectedCategoryId == null ? "active" : "")">Tüm Kategoriler</a>
-                                    </li>
-                                    @if (ViewBag.Categories != null)
+
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Kategoriler
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li>
+                                    <a href="@Url.Action("Index", "Home", new { categoryId = (int?)null })" class="dropdown-item @(ViewBag.SelectedCategoryId == null ? "active" : "")">Tüm Kategoriler</a>
+                                </li>
+                                @if (ViewBag.Categories != null && User.Identity.IsAuthenticated)
+                                {
+                                    foreach (var category in ViewBag.Categories)
                                     {
-                                        foreach (var category in ViewBag.Categories)
-                                        {
-                                            <li>
-                                                <a href="@Url.Action("Index", "Home", new { categoryId = category.Id })" class="dropdown-item @(ViewBag.SelectedCategoryId == category.Id ? "active" : "")">@category.Name</a>
-                                            </li>
-                                        }
+                                        <li>
+                                            <a href="@Url.Action("Index", "Home", new { categoryId = category.Id })" class="dropdown-item @(ViewBag.SelectedCategoryId == category.Id ? "active" : "")">@category.Name</a>
+                                        </li>
                                     }
-                                </ul>
-                            </li>
-                        </ul>
-                        <ul class="navbar-nav">
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                            </li>
+                                }
+                            </ul>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Ürünler</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Cart" asp-action="Index">
-                                <span id="cartItemCount" class="badge bg-danger rounded-pill"></span>
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <span id="cartItemCount" class="badge bg-danger rounded-pill"></span>
 
-                                <i class="bi bi-cart3"></i> Sepetim
+                                    <i class="bi bi-cart3"></i>
+                                }
+                                Sepetim
                             </a>
                         </li>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Cart" asp-action="OrderList">Siparişler</a>
+                            </li>
+                        }
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdownAccount" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Hesabım
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdownAccount">
-                                @if (HttpContextAccessor.HttpContext.Session.GetString("Email") != null)
+                                @if (User.Identity.IsAuthenticated)
                                 {
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="UserProfile">@HttpContextAccessor.HttpContext.Session.GetString("Email")</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="UserProfile">@User.Identity.Name</a></li>
                                     <li><hr class="dropdown-divider" /></li>
                                     <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Logout">Çıkış Yap</a></li>
                                 }
@@ -81,15 +91,15 @@
                                 }
                             </ul>
                         </li>
-                        </ul>
-                    </div>
+                    </ul>
                 </div>
-            </nav>
-        </header>
-    
+            </div>
+        </nav>
+    </header>
+
     <div class="container-fluid">
         <div class="row">
-            @if (HttpContextAccessor.HttpContext.Session.GetString("Email") != null)
+            @if (User.Identity.IsAuthenticated)
             {
                 <div class="col-md-2">
                     <div class="list-group">

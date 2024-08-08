@@ -44,5 +44,10 @@ public class ApplicationDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
     }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        return await base.SaveChangesAsync(cancellationToken);
+    }
 }
 

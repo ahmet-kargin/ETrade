@@ -1,0 +1,56 @@
+﻿@model IEnumerable<ETrade.WebUI.Models.OrderModel.OrderModel>
+
+<div class="container mt-5">
+    <h2>Your Orders</h2>
+    @if (Model != null && Model.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Order Date</th>
+                    <th>Total Amount</th>
+                    <th>Items</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model)
+                {
+                    <tr>
+                        <td>@order.OrderDate.ToShortDateString()</td>
+                        <td>@order.TotalAmount.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("tr-TR"))</td>
+                        <td>
+                            <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#orderItemsCollapse_@order.Id">View Items</button>
+                            <div id="orderItemsCollapse_@order.Id" class="collapse">
+                                <table class="table mt-2">
+                                    <thead>
+                                        <tr>
+                                            <th>Product Name</th>
+                                            <th>Quantity</th>
+                                            <th>Price</th>
+                                            <th>Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in order.OrderItems)
+                                        {
+                                            <tr>
+                                                <td>@item.ProductName</td>
+                                                <td>@item.Quantity</td>
+                                                <td>@item.Price.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("tr-TR"))</td>
+                                                <td>@item.Subtotal.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("tr-TR"))</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No orders found.</p>
+    }
+</div>

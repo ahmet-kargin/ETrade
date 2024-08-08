@@ -57,13 +57,12 @@
                             <td>@product.StockCode</td>
                             <td>
                                 <!-- Sepete Ekle Butonu -->
-                                @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post))
-                                {
-                                    <form asp-action="AddToCart" asp-controller="Cart" method="post" class="d-inline">
-                                        <input type="hidden" name="productId" value="@product.Id" />
-                                        <button type="submit" class="btn btn-primary btn-sm">Sepete Ekle</button>
-                                    </form>
-                                }
+                                
+                                <form asp-action="AddToCart" asp-controller="Cart" method="post" class="d-inline">
+                                    <input type="hidden" name="productId" value="@product.Id" />
+                                    <button type="submit" class="btn btn-primary btn-sm">Sepete Ekle</button>
+                                </form>
+                                
                             </td>
                         </tr>
                     }
