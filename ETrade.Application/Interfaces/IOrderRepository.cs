@@ -1,5 +1,4 @@
 ﻿using Framework.ETrade.Domain.Entities;
-using System.Threading.Tasks;
 
 namespace ETrade.Application.Interfaces;
 

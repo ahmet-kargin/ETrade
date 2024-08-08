@@ -38,6 +38,7 @@ builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+builder.Services.AddScoped<IBrandRepository, BrandRepository>();
 
 
 // Authentication ve JWT Bearer konfigürasyonunu tek bir yerde yapılandırın
