@@ -127,15 +127,18 @@ namespace ETrade.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> ConfirmOrder()
         {
+            // Kullanıcının kimliğini session'dan alır.
             var userIdString = HttpContext.Session.GetString("Id");
             if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
             {
+                // Kullanıcı kimliği yoksa veya geçersizse Login sayfasına yönlendirir.
                 return RedirectToAction("Login", "Account");
             }
-
+            // Kullanıcının sepetindeki ürünleri alır.
             var cartItems = await _cartService.GetCartItemsByUserIdAsync(userId);
             if (cartItems == null || !cartItems.Any())
             {
+                // Sepet boşsa ana sayfaya yönlendirir.
                 return RedirectToAction("Index");
             }
 
@@ -158,26 +161,32 @@ namespace ETrade.WebUI.Controllers
                     Price = cartItem.Product.Price
                 }).ToList()
             };
-
+            // Siparişi veritabanına ekler ve değişiklikleri kaydeder.
             await _orderRepository.AddAsync(order);
             await _orderRepository.SaveChangesAsync();
 
+            // Kullanıcının sepetini temizler.
             HttpContext.Session.Remove("CartItems");
 
+            // Sipariş listesine yönlendirir.
             return RedirectToAction("OrderList", new { orderId = order.Id });
         }
 
         [HttpGet]
         public async Task<IActionResult> OrderList()
         {
+            // Kullanıcının kimliğini session'dan alır.
             var userIdString = HttpContext.Session.GetString("Id");
             if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
             {
+                // Kullanıcı kimliği yoksa veya geçersizse Login sayfasına yönlendirir.
                 return RedirectToAction("Login", "Account");
             }
 
+            // Kullanıcının siparişlerini alır.
             var orders = await _orderRepository.GetOrdersByUserIdAsync(userId);
 
+            // Siparişleri OrderModel'e dönüştürür.
             var orderViewModels = orders.Select(order => new OrderModel
             {
                 Id = order.Id,
@@ -189,7 +198,7 @@ namespace ETrade.WebUI.Controllers
                     ProductId = oi.ProductId,
                     Quantity = oi.Quantity,
                     Price = oi.Price,
-                    ProductName = oi.Product.Name // ProductName'i OrderItemModel'e ekledik
+                    ProductName = oi.Product.Name 
                 }).ToList()
             }).ToList();
 
